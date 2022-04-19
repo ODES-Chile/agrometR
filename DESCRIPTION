@@ -35,4 +35,3 @@ Depends:
     httr,
     readr
 LazyData: true
-URL: http://jkunst.com/agrometR/
