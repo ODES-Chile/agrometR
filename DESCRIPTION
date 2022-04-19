@@ -1,5 +1,6 @@
 Package: agrometR
 Title: What the Package Does (One Line, Title Case)
+Description: What the package does (one paragraph).
 Version: 0.0.0.9000
 Authors@R: c(
   person(
@@ -16,7 +17,8 @@ Authors@R: c(
     comment = c(ORCID = "0000-0001-6896-8534")
     )
   )
-Description: What the package does (one paragraph).
+URL: https://jkunst.com/agrometR/, https://github.com/jbkunst/agrometR
+BugReports: https://github.com/jbkunst/agrometR/issues  
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
