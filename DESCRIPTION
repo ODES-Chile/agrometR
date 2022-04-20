@@ -33,5 +33,7 @@ Depends:
     janitor,
     tibble,
     httr,
-    readr
+    readr,
+    progressr,
+    rlang
 LazyData: true

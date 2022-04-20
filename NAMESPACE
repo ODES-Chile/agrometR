@@ -2,3 +2,4 @@
 
 export(get_agro_data)
 export(get_agro_data_from_api)
+importFrom(rlang,.data)

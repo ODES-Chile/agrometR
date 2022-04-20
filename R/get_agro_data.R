@@ -1,65 +1,72 @@
+#' Get data from agromet.cl API
+#'
+#' @param stations_id A numeric value indicating stations ID from `estaciones_agromet`.
+#' @param date_start A value parseable by `lubridate::as_datetime`, for example `"2020-11-30 01:00:00"`.
+#' @param date_end Same as `date_start` parameter.
+#' @param verbose A logical value to show or not a progress bar with eta.
+#'
+#' @examples
+#'
+#' get_agro_data(1:10, "2020-11-30 01:00:00", "2020-12-15 01:00:00")
+#'
+#' get_agro_data(1:10, "2020-11-30 01:00:00", "2020-12-15 01:00:00", verbose = TRUE)
+#'
+#'
+#' @importFrom rlang .data
 #' @export
-get_agro_data <- function(stations_id = NULL){
+get_agro_data <- function(stations_id = NULL, date_start = NULL, date_end = NULL, verbose = FALSE){
 
+  # stations_id <- sample(estaciones_agromet[["ema"]], size = 20)
+  # stations_id <- c(1:10, 10, 10, -99)
+  # verbose <- TRUE
+  # date_start <- "2020-11-30"
+  # date_end   <- "2020-12-15 01:00:00"
 
-  TRUE
-  agrometR::estaciones
-  # ids <- get_stations(where)$identificador
-  # resChk <- check_variables(ids,variables)
-  # idVars <- resChk[[1]]
-  # idSts <- resChk[[2]]
-  #
-  # #type='estaciones',idEsta,idVar,time_span,key=key
-  # nameSta <- dataEst$nombre[dataEst$identificador %in% idSts]
-  # nameVars <- infoEsta$shorthName[infoEsta$identificador %in% idVars]
-  #
-  # message('\n Downloading data...')
-  # pb <- txtProgressBar(min = 0, max = length(idSts)*length(idVars), style = 3)
-  # c<- 0
-  # res <- lapply(seq_along(idSts),function(j){
-  #   c <<- c+1
-  #   print(paste0('j:',j))
-  #   setTxtProgressBar(pb, c)
-  #   res2 <- lapply(seq_along(idVars), function(i){
-  #     c <<- c+1
-  #     print(paste0('i:',i))
-  #     setTxtProgressBar(pb, c)
-  #     dataSt <- .getFromAPI(type = 'muestras',
-  #                           idEsta = idSts[j],
-  #                           idVar = idVars[i],
-  #                           time_span = time_span,
-  #                           key = key)
-  #     print(dataSt)
-  #     if (length(dataSt) == 0) {
-  #       return()
-  #     } else {
-  #       dataSt$var <- nameVars[i]
-  #       dataSt$cod <- idSts[j]
-  #       return(dataSt)
-  #     }
-  #   })
-  #
-  #   if (length(res2) != 0){
-  #     dataVars <- Reduce(rbind,res2)
-  #     dataVars$station <- nameSta[j]
-  #     return(dataVars)
-  #   } else return()
-  #
-  #   # if (length(nameVars) > 1 & !is.null(dataVars)) {
-  #   #   dataVars <- dataVars[,-seq(3,dim(dataVars)[2],2)]
-  #   # }
-  #
-  #
-  # })
-  #
-  # out <- Reduce(rbind, res)
-  # out$valor <- as.numeric(out$valor)
-  # return(tibble(out))
+  # validation stations_id
+  stations_id <- sort(unique(stations_id))
+
+  if(!all(stations_id %in% agrometR::estaciones_agromet[["ema"]])){
+
+    warning("Some stations_id does not exist. Considering existing stations")
+    stations_id <- intersect(stations_id, agrometR::estaciones_agromet[["ema"]])
+
+  }
+
+  # validation dates
+  date_limits <- list(date_start, date_end) |>
+    purrr::map(lubridate::as_datetime) |>
+    purrr::map_chr(format, "%Y-%m-%d+%H:%M:%S") |>
+    # purrr::map_chr(format, "%Y-%m-%d%2b%H:%M:%S") |>
+    sort()
+
+  fun_dnwlod <- get_agro_data_from_api
+
+  if(verbose) {
+
+    pb <- progress::progress_bar$new(
+      total = length(stations_id),
+      format = " Downloading data from station :station [:bar] :percent eta: :eta"
+      )
+
+    fun_dnwlod <- function(station_id,  date_start, date_end){
+      pb$tick(tokens = list(station = station_id))
+      get_agro_data_from_api(station_id,  date_start, date_end)
+    }
+
+  }
+
+  dout <- purrr::map_df(stations_id,  fun_dnwlod,  date_start = date_start,  date_end = date_end, .id = "station_id") |>
+    dplyr::mutate(station_id = as.numeric(.data$station_id))
+
+  dout
+
 }
 
 
 
-#' Get data from agromet.cl API
+#' @rdname get_agro_data
+#'
+#' @param station_id A numeric length 1 value indicating station ID from `estaciones_agromet`.
 #'
 #' @examples
 #'
@@ -68,11 +75,16 @@ get_agro_data <- function(stations_id = NULL){
 #' @export
 get_agro_data_from_api <- function(station_id = NULL, date_start = NULL, date_end = NULL){
 
-
   # station_id <- 109
   # date_start <- "2020-11-30 01:00:00"
+  # date_start <- "2020-11-30"
   # date_end   <- "2020-12-15 01:00:00"
-  # fmt <- "%Y-%m-%d+%H:%M:%S"
+
+  stopifnot(
+    !is.null(station_id),
+    station_id %in% agrometR::estaciones_agromet[["ema"]],
+    length(station_id) == 1
+    )
 
   date_limits <- list(date_start, date_end) |>
     purrr::map(lubridate::as_datetime) |>
