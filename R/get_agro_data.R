@@ -11,8 +11,12 @@
 #'
 #' get_agro_data(1:10, "2020-11-30 01:00:00", "2020-12-15 01:00:00", verbose = TRUE)
 #'
-#'
 #' @importFrom rlang .data
+#' @importFrom lubridate as_datetime
+#' @importFrom purrr map map_df map_chr reduce
+#' @importFrom dplyr mutate
+#' @import progress
+#'
 #' @export
 get_agro_data <- function(stations_id = NULL, date_start = NULL, date_end = NULL, verbose = FALSE){
 
@@ -62,8 +66,6 @@ get_agro_data <- function(stations_id = NULL, date_start = NULL, date_end = NULL
 
 }
 
-
-
 #' @rdname get_agro_data
 #'
 #' @param station_id A numeric length 1 value indicating station ID from `estaciones_agromet`.
@@ -72,6 +74,12 @@ get_agro_data <- function(stations_id = NULL, date_start = NULL, date_end = NULL
 #'
 #' get_agro_data_from_api(108, "2020-11-30 01:00:00", "2020-12-15 01:00:00")
 #'
+#' @importFrom httr GET content
+#' @importFrom xml2 read_xml xml_find_all
+#' @importFrom janitor make_clean_names
+#' @importFrom stringr str_remove_all str_split
+#' @importFrom readr type_convert
+#' @importFrom tibble tibble
 #' @export
 get_agro_data_from_api <- function(station_id = NULL, date_start = NULL, date_end = NULL){
 
