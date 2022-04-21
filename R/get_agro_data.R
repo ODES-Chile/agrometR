@@ -86,6 +86,7 @@ get_agro_data_from_api <- function(station_id = NULL, date_start = NULL, date_en
   # date_start <- "2020-11-30 01:00:00"
   # date_start <- "2020-11-30"
   # date_end   <- "2020-12-15 01:00:00"
+  # date_end   <- "2022-04-20 22:15:41 -04"
 
   stopifnot(
     !is.null(station_id),
