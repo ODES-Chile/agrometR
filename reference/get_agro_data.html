@@ -21,6 +21,12 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/Introduction-to-agrometR.html">Introduction to agrometR</a>
+  </div>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -78,7 +84,7 @@
 <span class="r-in"><span class="fu">get_agro_data</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="st">"2020-11-30 01:00:00"</span>, <span class="st">"2020-12-15 01:00:00"</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3,610 × 13</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    station_id fecha_hora          temp_promedio_aire precipitacion_horaria</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>          1 2020-11-30 <span style="color: #949494;">01:00:00</span>               <span style="color: #BB0000;">NA</span>                      <span style="color: #BB0000;">NA</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>          1 2020-11-30 <span style="color: #949494;">02:00:00</span>               <span style="color: #BB0000;">NA</span>                      <span style="color: #BB0000;">NA</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>          1 2020-11-30 <span style="color: #949494;">03:00:00</span>               <span style="color: #BB0000;">NA</span>                      <span style="color: #BB0000;">NA</span></span>
@@ -97,7 +103,7 @@
 <span class="r-in"><span class="fu">get_agro_data</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="st">"2020-11-30 01:00:00"</span>, <span class="st">"2020-12-15 01:00:00"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3,610 × 13</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    station_id fecha_hora          temp_promedio_aire precipitacion_horaria</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>          1 2020-11-30 <span style="color: #949494;">01:00:00</span>               <span style="color: #BB0000;">NA</span>                      <span style="color: #BB0000;">NA</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>          1 2020-11-30 <span style="color: #949494;">02:00:00</span>               <span style="color: #BB0000;">NA</span>                      <span style="color: #BB0000;">NA</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>          1 2020-11-30 <span style="color: #949494;">03:00:00</span>               <span style="color: #BB0000;">NA</span>                      <span style="color: #BB0000;">NA</span></span>
@@ -115,23 +121,23 @@
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">get_agro_data_from_api</span><span class="op">(</span><span class="fl">108</span>, <span class="st">"2020-11-30 01:00:00"</span>, <span class="st">"2020-12-15 01:00:00"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 361 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fecha_hora          temp_promedio_aire precipitacion_horaria humed_rel_prome…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2020-11-30 <span style="color: #949494;">01:00:00</span>               11                       0             74.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2020-11-30 <span style="color: #949494;">02:00:00</span>               10                       0             76.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2020-11-30 <span style="color: #949494;">03:00:00</span>                9.4                     0             78.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2020-11-30 <span style="color: #949494;">04:00:00</span>                8.7                     0             79.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2020-11-30 <span style="color: #949494;">05:00:00</span>                8.1                     0             80.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2020-11-30 <span style="color: #949494;">06:00:00</span>                8.5                     0             80.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2020-11-30 <span style="color: #949494;">07:00:00</span>               11.3                     0             74.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2020-11-30 <span style="color: #949494;">08:00:00</span>               13.8                     0             68.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2020-11-30 <span style="color: #949494;">09:00:00</span>               16.9                     0             64.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2020-11-30 <span style="color: #949494;">10:00:00</span>               19.1                     0             59.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 351 more rows, and 8 more variables: presion_atmosferica &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   radiacion_solar_max &lt;dbl&gt;, veloc_max_viento &lt;dbl&gt;, temp_minima &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   temp_maxima &lt;dbl&gt;, direccion_del_viento &lt;dbl&gt;, grados_dia &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   horas_frio &lt;lgl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 361 × 13</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    station_id fecha_hora          temp_promedio_aire precipitacion_horaria</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>        108 2020-11-30 <span style="color: #949494;">01:00:00</span>               11                       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>        108 2020-11-30 <span style="color: #949494;">02:00:00</span>               10                       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>        108 2020-11-30 <span style="color: #949494;">03:00:00</span>                9.4                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>        108 2020-11-30 <span style="color: #949494;">04:00:00</span>                8.7                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>        108 2020-11-30 <span style="color: #949494;">05:00:00</span>                8.1                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>        108 2020-11-30 <span style="color: #949494;">06:00:00</span>                8.5                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>        108 2020-11-30 <span style="color: #949494;">07:00:00</span>               11.3                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>        108 2020-11-30 <span style="color: #949494;">08:00:00</span>               13.8                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>        108 2020-11-30 <span style="color: #949494;">09:00:00</span>               16.9                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>        108 2020-11-30 <span style="color: #949494;">10:00:00</span>               19.1                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 351 more rows, and 9 more variables: humed_rel_promedio &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   presion_atmosferica &lt;dbl&gt;, radiacion_solar_max &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   veloc_max_viento &lt;dbl&gt;, temp_minima &lt;dbl&gt;, temp_maxima &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   direccion_del_viento &lt;dbl&gt;, grados_dia &lt;dbl&gt;, horas_frio &lt;lgl&gt;</span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

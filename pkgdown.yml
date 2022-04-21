@@ -1,8 +1,9 @@
 pandoc: 2.7.3
 pkgdown: 2.0.2
 pkgdown_sha: ~
-articles: {}
-last_built: 2022-04-21T01:36Z
+articles:
+  Introduction-to-agrometR: Introduction-to-agrometR.html
+last_built: 2022-04-21T02:52Z
 urls:
   reference: http://jkunst.com/agrometR/reference
   article: http://jkunst.com/agrometR/articles
