@@ -37,6 +37,8 @@ Imports:
     readr,
     progress,
     rlang
+Suggests:
+    ggplot2
 LazyData: true
 Suggests: 
     knitr,
