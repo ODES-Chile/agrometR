@@ -59,8 +59,7 @@ get_agro_data <- function(stations_id = NULL, date_start = NULL, date_end = NULL
 
   }
 
-  dout <- purrr::map_df(stations_id,  fun_dnwlod,  date_start = date_start,  date_end = date_end, .id = "station_id") |>
-    dplyr::mutate(station_id = as.numeric(.data$station_id))
+  dout <- purrr::map_df(stations_id,  fun_dnwlod,  date_start = date_start,  date_end = date_end)
 
   dout
 
@@ -158,6 +157,9 @@ get_agro_data_from_api <- function(station_id = NULL, date_start = NULL, date_en
     readr::type_convert(col_types = readr::cols()) |>
     dplyr::select(idx) |>
     purrr::set_names(col_names)
+
+  d <- d |>
+    dplyr::mutate(station_id = station_id, .before = 1)
 
   # dplyr::glimpse(d)
 

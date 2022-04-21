@@ -1,0 +1,108 @@
+---
+title: "Introduction to agrometR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to agrometR}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(agrometR)
+```
+
+
+Datos de estaciones
+
+```{r}
+data("estaciones_agromet", package = "agrometR")
+
+estaciones_agromet
+```
+
+## Get data
+
+```{r}
+library(dplyr)
+
+set.seed(123456)
+
+stations <- estaciones_agromet |> 
+  pull(ema) |> 
+  sample(6)
+
+stations
+
+days_to_plot <- 120
+
+date_time_start <- format(Sys.Date() - days_to_plot*24*60*60/100000, "%Y-%m-%d")
+date_time_start
+
+date_time_end <- format(Sys.Date(), "%Y-%m-%d")
+date_time_end
+
+data_stations <- get_agro_data(
+  stations_id = stations, 
+  date_start = date_time_start,
+  date_end = date_time_end,
+  verbose = TRUE  
+  )
+
+glimpse(data_stations)
+
+data_stations |> 
+  count(station_id)
+```
+
+## Plotting
+
+```{r}
+library(ggplot2)
+
+p <- ggplot(data_stations, aes(fecha_hora, temp_promedio_aire, color = factor(station_id), group = station_id)) +
+  geom_line(alpha = 0.5) +
+  geom_smooth(se = FALSE) +
+  scale_color_viridis_d(option = "magma", begin = 0.1, end = 0.9) +
+  theme_minimal()
+
+p
+
+p +
+  facet_wrap(vars(station_id))
+```
+
+## Grouping `fecha_hora`
+
+```{r}
+library(lubridate)
+
+data_stations_daily <- data_stations |> 
+  mutate(fecha_hora = floor_date(fecha_hora, "day")) |> 
+  group_by(station_id, fecha_hora) |> 
+  summarise(
+    across(.cols = c(temp_promedio_aire, humed_rel_promedio), .fns = mean, na.rm = TRUE),
+    precipitacion_horaria = sum(precipitacion_horaria, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+glimpse(data_stations_daily)
+  
+
+ggplot(mapping = aes(fecha_hora, temp_promedio_aire, color = factor(station_id), group = station_id)) +
+  geom_smooth(data = data_stations, se = FALSE) +
+  geom_line(data = data_stations_daily, alpha = .3, size = 2) +
+  scale_color_viridis_d(option = "magma", begin = 0.1, end = 0.9) +
+  theme_minimal() +
+  facet_wrap(vars(station_id))
+```
+
+
