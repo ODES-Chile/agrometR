@@ -16,12 +16,15 @@ Estaciones agromet
 \section{Variables}{
 
 
-\itemize{
-
-\item \code{ema}: Id.
-\item \code{name}: Name.
-\item \code{heigth}: Heigth.
-
+\itemize{#'
+\item \code{ ema } : ema.
+\item \code{ institucion } : institucion.
+\item \code{ nombre_ema } : nombre_ema.
+\item \code{ comuna } : comuna.
+\item \code{ region } : region.
+\item \code{ latitud } : latitud.
+\item \code{ longitud } : longitud.
+\item \code{ fecha_de_alta } : fecha_de_alta.
 }
 }
 
