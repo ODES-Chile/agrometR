@@ -3,7 +3,7 @@ pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   Introduction-to-agrometR: Introduction-to-agrometR.html
-last_built: 2022-04-22T19:49Z
+last_built: 2022-04-23T04:14Z
 urls:
   reference: http://jkunst.com/agrometR/reference
   article: http://jkunst.com/agrometR/articles
