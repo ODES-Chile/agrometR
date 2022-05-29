@@ -1,0 +1,165 @@
+---
+title: "EMA"
+output:
+  html_document:
+    theme: simplex
+editor_options: 
+  chunk_output_type: console
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(agrometR)
+
+URL_API <- "https://climatologia.meteochile.gob.cl/application/productos"
+```
+
+Documentación:
+
+https://climatologia.meteochile.gob.cl/application/publicaciones/documentoPdf/documentosGenerales/dmc-011-ServiciosConsumirDatos.pdf
+
+## API {.tabset}
+
+### Estaciones en Ruta
+
+- Descripción : Listado de estaciones que publican datos de la plataformas automáticas
+- Recurso : https://climatologia.meteochile.gob.cl/application/productos/estacionesRedEma
+
+```{r}
+listviewer::jsonedit(
+  mode = "code", width = "100%",
+  httr::content(
+    httr::GET(
+      fs::path(URL_API, "estacionesRedEma")
+      )
+    )
+  )
+```
+
+### Datos Actuales Minutarios
+
+- Descripción : Datos minutarios de la hora reciente de todas las estaciones de la red
+- Recurso : https://climatologia.meteochile.gob.cl/application/productos/datosRecientesRedEma
+
+```{r}
+listviewer::jsonedit(
+  mode = "code", width = "100%",
+  httr::content(
+    httr::GET(
+      fs::path(URL_API, "datosRecientesRedEma")
+      )
+    ),
+  height = 500
+  )
+```
+
+### Datos Actuales de una Estación
+
+- Descripción : Datos minutarios de las ultimas 12 horas una estación
+- Recurso : https://climatologia.meteochile.gob.cl/application/productos/datosRecientesEma/330021
+
+```{r}
+listviewer::jsonedit(
+  mode = "code", width = "100%",
+  httr::content(
+    httr::GET(
+      fs::path(URL_API, "datosRecientesRedEma/330021")
+      )
+    )
+  )
+```
+
+### Datos Resumen
+
+- Descripción : Datos recientes y resumen diario de toda la red de estaciones automáticas
+- Recurso : https://climatologia.meteochile.gob.cl/application/productos/emaResumenDiario
+
+```{r}
+listviewer::jsonedit(
+  mode = "code", width = "100%",
+  httr::content(
+    httr::GET(
+      fs::path(URL_API, "emaResumenDiario")
+      )
+    )
+  )
+```
+
+### Datos Resumen diario de la estación
+
+- Descripción : Datos recientes y resumen diario de la estación
+- Recurso : https://climatologia.meteochile.gob.cl/application/productos/emaResumenDiario/330020
+
+```{r}
+listviewer::jsonedit(
+  mode = "code", width = "100%",
+  httr::content(
+    httr::GET(
+      fs::path(URL_API, "emaResumenDiario/330020")
+      )
+    )
+  )
+```
+
+### Datos Anteriores
+
+- Descripción : Datos cada 15 minutos para un año, mes y estación
+- Recurso : https://climatologia.meteochile.gob.cl/application/productos/datosRecientesEma/330020/2018/06
+
+```{r}
+listviewer::jsonedit(
+  mode = "code", width = "100%",
+  httr::content(
+    httr::GET(
+      fs::path(URL_API, "datosRecientesEma/330020/2018/06")
+      )
+    )
+  )
+```
+
+### Datos Índice de Radiación UVB
+
+- Descripción : Datos cada 5 minutos del índice de radiación ultravioleta de la red radiométrica
+- Recurso : https://climatologia.meteochile.gob.cl/application/productos/recienteUvb
+
+```{r}
+listviewer::jsonedit(
+  mode = "code", width = "100%",
+  httr::content(
+    httr::GET(
+      fs::path(URL_API, "recienteUvb")
+      )
+    )
+  )
+```
+
+### Informe Climatológico Diario
+
+- Descripción : Informe climatológico diario 22 estaciones principales
+- Recurso : https://climatologia.meteochile.gob.cl/application/productos/boletinClimatologicoDiario
+
+```{r}
+listviewer::jsonedit(
+  mode = "code", width = "100%",
+  httr::content(
+    httr::GET(
+      fs::path(URL_API, "boletinClimatologicoDiario")
+      )
+    )
+  )
+```
+
