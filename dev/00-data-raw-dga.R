@@ -5,7 +5,7 @@ library(yyyymm)
 # parameters --------------------------------------------------------------
 URL_API <- "https://climatologia.meteochile.gob.cl/application/productos"
 
-pers <- ym_seq(201001, format(Sys.time(), "%Y%m"))
+pers <- ym_seq(200001, format(Sys.time(), "%Y%m"))
 pers <- rev(pers)
 
 folder_data <- "dev/data-raw-dga/"
