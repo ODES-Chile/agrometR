@@ -153,18 +153,18 @@ dhist |>
 
 
 # resumen diario ----------------------------------------------------------
-dresumen <- dir(folder_data, full.names = TRUE) |>
+dfdiario <- dir(folder_data, full.names = TRUE) |>
   rev() |>
-  map_df(function(f = "dev/data-raw-dmc/202202.rds"){
+  map_df(function(f = "dev/data-raw-dmc/201207.rds"){
 
     # fs::file_delete(f)
     message(f)
 
     d <- readRDS(f)
 
-    glimpse(d)
+    # glimpse(d)
 
-    if(identical(dim(dres), c(0L, 0L))) return(d)
+    if(identical(dim(d), c(0L, 0L))) return(d)
 
     # removemos unidades
     # trimeamos
@@ -175,10 +175,10 @@ dresumen <- dir(folder_data, full.names = TRUE) |>
       mutate(across(everything(), readr::parse_guess))
 
     # redondeamos por día y resumimos a lo agromet
-    dejemplo <- readRDS("dev/data-raw-agromet/202205.rds")
+    # dejemplo <- readRDS("dev/data-raw-agromet/202205.rds")
 
-    glimpse(dejemplo)
-    glimpse(d)
+    # glimpse(dejemplo)
+    # glimpse(d)
 
     # d |>
     #   filter(!is.na(aguaCaidaDelMinuto))
@@ -194,7 +194,7 @@ dresumen <- dir(folder_data, full.names = TRUE) |>
     #   facet_grid(vars(k))
 
 
-    d |>
+    dres <- d |>
       mutate(fecha_hora = lubridate::ceiling_date(momento, "hour"), .before = 1) |>
       group_by(fecha_hora) |>
       summarise(
@@ -209,29 +209,9 @@ dresumen <- dir(folder_data, full.names = TRUE) |>
         direccion_del_viento  = mean(direccionDelViento), # REVISAR
         grados_dia            = NA,
         horas_frio            = NA
-      ) |>
-      glimpse()
-
-
-
-    dres <- dres |>
-      mutate(
-        fecha = lubridate::ymd_hms(momento),
-        anio = lubridate::year(fecha),
-        mes = format(fecha, "%m"),
-        .before = 1
       )
 
-    # dres |> filter(str_c(anio, mes) != str_remove(basename(f), ".rds"))
-
-    dres <- dres |>
-      count(estacion_id, anio, mes)
-
-    nfuera <- dres |>
-      filter(str_c(anio, mes) != str_remove(basename(f), ".rds")) |>
-      nrow()
-
-    stopifnot(nfuera == 0)
+    # glimpse(dres)
 
     dres
 
