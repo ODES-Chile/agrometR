@@ -218,4 +218,4 @@ dfdiario <- dir(folder_data, full.names = TRUE) |>
   })
 
 
-
+glimpse(dfdiario)
