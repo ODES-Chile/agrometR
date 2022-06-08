@@ -5,7 +5,7 @@ library(lubridate)
 library(yyyymm)
 
 # data --------------------------------------------------------------------
-pers <- ym_seq(200001, format(Sys.time(), "%Y%m"))
+pers <- ym_seq(200301, format(Sys.time(), "%Y%m"))
 pers <- rev(pers)
 
 folder_data <- "dev/data-raw-agromet/"
@@ -13,11 +13,11 @@ folder_data <- "dev/data-raw-agromet/"
 fs::dir_create(folder_data)
 
 # remove las 2
-# try(
-#   dir("data/rds", full.names = TRUE) |>
-#     tail(2) |>
-#     fs::file_delete()
-#   )
+try(
+  dir(folder_data, full.names = TRUE) |>
+    tail(2) |>
+    fs::file_delete()
+  )
 
 walk(pers, function(per = 202202){
 
@@ -54,8 +54,129 @@ walk(pers, function(per = 202202){
 
 })
 
+# validar data histórica --------------------------------------------------
+dhist <- dir(folder_data, full.names = TRUE) |>
+  rev() |>
+  map_df(function(f = "dev/data-raw-agromet/202202.rds"){
 
-# validar periodos --------------------------------------------------------
+    # fs::file_delete(f)
+    message(f)
+
+    dres <- readRDS(f)
+
+    if(identical(dim(dres), c(0L, 0L))) return(dres)
+
+    dres <- dres |>
+      mutate(
+        fecha = lubridate::ymd_hms(fecha_hora),
+        anio = lubridate::year(fecha),
+        mes = format(fecha, "%m"),
+        .before = 1
+      )
+
+    # dres |> filter(str_c(anio, mes) != str_remove(basename(f), ".rds"))
+
+    dres <- dres |>
+      count(station_id, anio, mes)
+
+    nfuera <- dres |>
+      filter(str_c(anio, mes) != str_remove(basename(f), ".rds")) |>
+      nrow()
+
+    stopifnot(nfuera == 0)
+
+    dres
+
+  })
+
+p <- dhist |>
+  # filter(anio >= 2006) |>
+  # bind_rows()
+  # add_row(anio = 2011, mes = "01") |>
+  # add_row(anio = 2007, mes = "01") |>
+  complete(station_id, anio, mes) |>
+  crossing() |>
+  filter(!is.na(station_id)) |>
+  mutate(
+    periodo = yyyymm::ym_to_date(str_c(anio, mes)),
+    ind = ifelse(is.na(n), FALSE, TRUE),
+  ) |>
+  # filter(periodo < lubridate::ymd(20220601)) |>
+  ggplot() +
+  geom_tile(aes(periodo, factor(station_id), fill = n)) +
+  scale_fill_continuous(na.value = "gray90") +
+  scale_x_date(
+    date_breaks = "1 year",
+    limits = c(lubridate::ymd(20060101), lubridate::ymd(20220601))
+  ) +
+  theme_minimal()
+
+p
+
+saveRDS(p, "dev/plot_hist_agromet.rds")
 
 
+
+# resumen diario ----------------------------------------------------------
+dfdiario <- dir(folder_data, full.names = TRUE) |>
+  rev() |>
+  map_df(function(f = "dev/data-raw-agromet/200912.rds"){
+
+    # fs::file_delete(f)
+    message(f)
+
+    d <- readRDS(f)
+
+    # glimpse(d)
+
+    if(identical(dim(d), c(0L, 0L))) return(d)
+
+    if(nrow(d) == 0) return(tibble())
+
+    # removemos unidades
+    # trimeamos
+    # parsemos
+    d <- d |>
+      mutate(across(everything(), ~ str_remove_all(.x, "°C$|kt$|°|%|Watt/m2$|hPas$|mm$"))) |>
+      mutate(across(where(is.character), str_trim)) |>
+      mutate(across(everything(), readr::parse_guess))
+
+    # glimpse(d)
+
+    dres <- d |>
+      mutate(fecha_hora = lubridate::ceiling_date(fecha_hora, "hour"), .before = 1) |>
+      group_by(station_id, fecha_hora) |>
+      summarise(
+        .groups = "drop",
+        temp_promedio_aire    = mean(temp_promedio_aire, na.rm = TRUE),
+        precipitacion_horaria = sum(precipitacion_horaria, na.rm = TRUE),
+        humed_rel_promedio    = mean(humed_rel_promedio, na.rm = TRUE),
+        presion_atmosferica   = mean(presion_atmosferica, na.rm = TRUE),
+        radiacion_solar_max   = mean(radiacion_solar_max, na.rm = TRUE),
+        veloc_max_viento      = NA, # REVISAR
+        temp_minima           = min(temp_minima, na.rm = TRUE),
+        temp_maxima           = max(temp_maxima, na.rm = TRUE),
+        direccion_del_viento  = mean(direccion_del_viento, na.rm = TRUE), # REVISAR
+        grados_dia            = NA,
+        horas_frio            = NA
+      ) |>
+      ungroup()
+
+    # glimpse(dres)
+
+    dres
+
+  })
+
+
+glimpse(dfdiario)
+
+dfdiario <- dfdiario |>
+  rename(estacion_id = station_id) |>
+  arrange(fecha_hora, estacion_id) |>
+  mutate(fuente =  "agromet", .before = 1)
+
+glimpse(dfdiario)
+
+saveRDS(dfdiario, "dev/data/agromet_diaria.rds")
 

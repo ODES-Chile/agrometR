@@ -9,10 +9,16 @@ pers <- rev(pers)
 
 folder_data <- "dev/data-raw-dmc/"
 
+# remove las 2
+try(
+  dir(folder_data, full.names = TRUE) |>
+    tail(2) |>
+    fs::file_delete()
+)
+
 fs::dir_create(folder_data)
 
 # process -----------------------------------------------------------------
-
 # estaciones
 estaciones <- httr::content(httr::GET(fs::path(URL_API, "estacionesRedEma")))
 
@@ -94,7 +100,7 @@ walk(pers, function(per = 202202){
 })
 
 
-# validar data ------------------------------------------------------------
+# validar data histórica --------------------------------------------------
 dhist <- dir(folder_data, full.names = TRUE) |>
   rev() |>
   map_df(function(f = "dev/data-raw-dga/202202.rds"){
@@ -129,7 +135,7 @@ dhist <- dir(folder_data, full.names = TRUE) |>
 
   })
 
-dhist |>
+p <- dhist |>
   filter(anio >= 2006) |>
   add_row(anio = 2011, mes = "01") |>
   add_row(anio = 2007, mes = "01") |>
@@ -150,12 +156,15 @@ dhist |>
     ) +
   theme_minimal()
 
+p
+
+saveRDS(p, "dev/plot_hist_dmc.rds")
 
 
 # resumen diario ----------------------------------------------------------
 dfdiario <- dir(folder_data, full.names = TRUE) |>
   rev() |>
-  map_df(function(f = "dev/data-raw-dmc/201207.rds"){
+  map_df(function(f = "dev/data-raw-dmc/202107.rds"){
 
     # fs::file_delete(f)
     message(f)
@@ -196,8 +205,9 @@ dfdiario <- dir(folder_data, full.names = TRUE) |>
 
     dres <- d |>
       mutate(fecha_hora = lubridate::ceiling_date(momento, "hour"), .before = 1) |>
-      group_by(fecha_hora) |>
+      group_by(estacion_id, fecha_hora) |>
       summarise(
+        .groups = "drop",
         temp_promedio_aire    = mean(temperatura, na.rm = TRUE),
         precipitacion_horaria = sum(aguaCaidaDelMinuto, na.rm = TRUE), # REVISAR!!!!!!
         humed_rel_promedio    = mean(humedadRelativa, na.rm = TRUE),
@@ -209,7 +219,8 @@ dfdiario <- dir(folder_data, full.names = TRUE) |>
         direccion_del_viento  = mean(direccionDelViento), # REVISAR
         grados_dia            = NA,
         horas_frio            = NA
-      )
+      ) |>
+      ungroup()
 
     # glimpse(dres)
 
@@ -219,3 +230,9 @@ dfdiario <- dir(folder_data, full.names = TRUE) |>
 
 
 glimpse(dfdiario)
+
+dfdiario <- dfdiario |>
+  arrange(fecha_hora, estacion_id) |>
+  mutate(fuente =  "dmc", .before = 1)
+
+saveRDS(dfdiario, "dev/data/dmc_diaria.rds")
