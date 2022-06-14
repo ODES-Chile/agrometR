@@ -36,3 +36,28 @@
 #' @usage variables_agromet
 #' @format A \code{data frame} with 12 observations and 3 variables.
 "variables_agromet"
+
+
+#' Estaciones agromet
+#'
+#' @section Variables:
+#'
+#' \itemize{
+#'
+#'  \item \code{ codigoNacional } : codigoNacional.
+#'  \item \code{ codigoOMM } : codigoOMM.
+#'  \item \code{ codigoOACI } : codigoOACI.
+#'  \item \code{ nombreEstacion } : nombreEstacion.
+#'  \item \code{ latitud } : latitud.
+#'  \item \code{ longitud } : longitud.
+#'  \item \code{ altura } : altura.
+#'  \item \code{ region } : region.
+#'  \item \code{ NombreRegion } : NombreRegion.
+#'  \item \code{ zonaGeografica } : zonaGeografica.
+#'  \item \code{ datos } : datos.
+#'
+#' }
+#'
+#' @docType data
+#' @name estaciones_dmc
+"estaciones_dmc"
