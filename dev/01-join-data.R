@@ -17,18 +17,23 @@ dagr |>
   group_by(estacion_id) |>
   summarise(fecha_hora_min = min(fecha_hora)) |>
   arrange(fecha_hora_min) |>
-  count(fecha_hora_min, sort = TRUE) |>
-  View()
-
-
+  count(fecha_hora_min, sort = TRUE)
 
 # join --------------------------------------------------------------------
-
 data <- bind_rows(dagr, ddmc)
+
+data <- rename(data, red = fuente)
 
 data
 
 saveRDS(data, "../obssa-chile/data/data_diaria.rds")
+
+data <- data |>
+  filter(lubridate::year(fecha_hora) >= 2020)
+
+saveRDS(data, "../obssa-chile/data/data_diaria_202X.rds")
+
+
 
 beepr::beep(4)
 
@@ -37,7 +42,7 @@ beepr::beep(4)
 agrometR::estaciones_agromet |> glimpse()
 
 est_agromet <- agrometR::estaciones_agromet |>
-  select(codigo = ema, nombre_estacion = nombre_ema, region, latitud, longitud) |>
+  select(estacion_id = ema, nombre_estacion = nombre_ema, region, latitud, longitud) |>
   glimpse()
 
 est_agromet
@@ -45,7 +50,7 @@ est_agromet
 agrometR::estaciones_dmc |> glimpse()
 
 est_dmc <- agrometR::estaciones_dmc |>
-  select(codigo = codigoNacional, nombre_estacion = nombreEstacion, region = NombreRegion,
+  select(estacion_id = codigoNacional, nombre_estacion = nombreEstacion, region = NombreRegion,
          latitud, longitud) |>
   glimpse()
 
