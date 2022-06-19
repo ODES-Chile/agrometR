@@ -20,7 +20,8 @@ dagr |>
   count(fecha_hora_min, sort = TRUE)
 
 # join --------------------------------------------------------------------
-data <- bind_rows(dagr, ddmc)
+data <- bind_rows(dagr, ddmc) |>
+  as_tibble()
 
 data <- rename(data, red = fuente)
 
@@ -33,7 +34,10 @@ data <- data |>
 
 saveRDS(data, "../obssa-chile/data/data_diaria_202X.rds")
 
+data <- data |>
+  filter(lubridate::year(fecha_hora) >= 2022)
 
+saveRDS(data, "../obssa-chile/data/data_diaria_2022.rds")
 
 beepr::beep(4)
 
