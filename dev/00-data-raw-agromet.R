@@ -12,10 +12,10 @@ folder_data <- "dev/data-raw-agromet/"
 
 fs::dir_create(folder_data)
 
-# remove las 2
+# remove las 3
 try(
   dir(folder_data, full.names = TRUE) |>
-    tail(2) |>
+    tail(3) |>
     fs::file_delete()
   )
 
@@ -120,7 +120,7 @@ saveRDS(p, "dev/plot_hist_agromet.rds")
 # resumen diario ----------------------------------------------------------
 dfdiario <- dir(folder_data, full.names = TRUE) |>
   rev() |>
-  map_df(function(f = "dev/data-raw-agromet/200912.rds"){
+  map_df(function(f = "dev/data-raw-agromet/202112.rds"){
 
     # fs::file_delete(f)
     message(f)

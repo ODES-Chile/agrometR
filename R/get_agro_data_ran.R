@@ -1,6 +1,6 @@
 #' Get data from agromet.cl API
 #'
-#' @param stations_id A numeric value indicating stations ID from `estaciones_agromet`.
+#' @param stations_id A numeric value indicating stations ID from `agrometR::estaciones_agromet`.
 #' @param date_start A value parseable by `lubridate::as_datetime`, for example `"2020-11-30 01:00:00"`.
 #' @param date_end Same as `date_start` parameter.
 #' @param verbose A logical value to show or not a progress bar with eta.

@@ -1,6 +1,85 @@
 # setup -------------------------------------------------------------------
+library(agrometR)
 library(tidyverse)
+library(lubridate)
 library(yyyymm)# remotes::install_github("jbkunst/yyyymm")
+
+# data --------------------------------------------------------------------
+pers <- ym_seq(200301, format(Sys.time(), "%Y%m"))
+pers <- rev(pers)
+
+folder_data <- "dev/data-raw-dmc/"
+
+fs::dir_create(folder_data)
+
+# remove las 3
+try(
+  dir(folder_data, full.names = TRUE) |>
+    tail(3) |>
+    fs::file_delete()
+)
+
+walk(pers, function(per = 202202){
+
+  figletr::figlet(per)
+
+  fout <- fs::path(folder_data, per, ext = "rds")
+
+  message(fout)
+
+  if(fs::file_exists(fout)) return(TRUE)
+
+  date_start <- ym_to_date(per, day = 1) |> as_datetime()
+  date_end   <- date_start + months(1) - seconds(1)
+
+  # date_start <- format(date_start, "%Y-%m-%d %H:%M:%S")
+  # date_end <- format(date_end, "%Y-%m-%d %H:%M:%S")
+
+  dres <- agrometR::get_agro_data_dmc(
+    agrometR::estaciones_dmc[["codigoNacional"]],
+    date_start = date_start,
+    date_end = date_end,
+    verbose = TRUE
+  )
+
+  # agrometR::get_agro_data_from_api_dmc(950001, date_start = date_start, date_end = date_end)
+
+  # corroboramos que todo esté dentro del periodo
+  stopifnot(nrow(dres) == nrow(filter(dres, format(momento, "%Y%m") == per)))
+
+  # dres <- dres %>%
+  #   filter(if_any(c(temp_promedio_aire:horas_frio), negate(is.na)))
+
+  # dres |> summarise(min(fecha_hora), max(fecha_hora)) |> mutate(per = per, .before = 1)
+
+  write_rds(dres, fout, compress = "xz")
+
+})
+
+
+# fs::dir_ls(folder_data) |>
+#   walk(function(f = "dev/data-raw-dmc/201711.rds"){
+#
+#     message(f)
+#
+#     d <- readRDS(f)
+#
+#     d <- d |>
+#       mutate(dplyr::across(tidyselect::everything(), ~ stringr::str_remove_all(.x, "°C$|kt$|°|%|Watt/m2$|hPas$|mm$"))) |>
+#       mutate(dplyr::across(tidyselect:::where(is.character), stringr::str_trim)) |>
+#       mutate(dplyr::across(tidyselect::everything(), readr::parse_guess))
+#
+#     if(has_name(d,"estacion_id")){
+#
+#       d <- d |>
+#         rename(station_id = estacion_id)
+#
+#     }
+#
+#     write_rds(d, f, compress = "xz")
+#
+#   })
+
 # parameters --------------------------------------------------------------
 URL_API <- "https://climatologia.meteochile.gob.cl/application/productos"
 
@@ -118,7 +197,7 @@ dhist <- dir(folder_data, full.names = TRUE) |>
         anio = lubridate::year(fecha),
         mes = format(fecha, "%m"),
         .before = 1
-        )
+      )
 
     # dres |> filter(str_c(anio, mes) != str_remove(basename(f), ".rds"))
 
@@ -145,7 +224,7 @@ p <- dhist |>
   mutate(
     periodo = yyyymm::ym_to_date(str_c(anio, mes)),
     ind = ifelse(is.na(n), FALSE, TRUE),
-    ) |>
+  ) |>
   filter(periodo < lubridate::ymd(20220601)) |>
   ggplot() +
   geom_tile(aes(periodo, factor(estacion_id), fill = n)) +
@@ -153,7 +232,7 @@ p <- dhist |>
   scale_x_date(
     date_breaks = "1 year",
     limits = c(lubridate::ymd(20060101), lubridate::ymd(20220601))
-    ) +
+  ) +
   theme_minimal()
 
 p
