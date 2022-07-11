@@ -46,3 +46,4 @@ dev/data-raw-dmc/*.rds
 dev/data/*.rds
 dev/*.rds
 docs
+data-raw/cr2-precipitaciones/cr2_prDaily_2020_ghcn/*
