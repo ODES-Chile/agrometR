@@ -59,7 +59,7 @@ get_agro_data <- function(stations_id = NULL, date_start = NULL, date_end = NULL
 
   }
 
-  dout <- purrr::map_df(stations_id,  fun_dnwlod,  date_start = date_start,  date_end = date_end)
+  dout <- purrr::map_df(stations_id,  purrr::possibly(fun_dnwlod,otherwise = NULL),  date_start = date_start,  date_end = date_end)
 
   dout
 
