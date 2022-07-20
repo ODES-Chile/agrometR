@@ -4,7 +4,7 @@ library(agrometR)
 library(lubridate)
 library(yyyymm)
 
-# data --------------------------------------------------------------------
+# data mensual ------------------------------------------------------------
 pers <- ym_seq(200301, format(Sys.time(), "%Y%m"))
 pers <- rev(pers)
 
@@ -107,7 +107,7 @@ p <- dhist |>
   scale_fill_continuous(na.value = "gray90") +
   scale_x_date(
     date_breaks = "1 year",
-    limits = c(lubridate::ymd(20060101), lubridate::ymd(20220601))
+    # limits = c(lubridate::ymd(20060101), lubridate::ymd(20220601))
   ) +
   theme_minimal()
 
@@ -116,67 +116,4 @@ p
 saveRDS(p, "dev/plot_hist_agromet.rds")
 
 
-
-# resumen diario ----------------------------------------------------------
-dfdiario <- dir(folder_data, full.names = TRUE) |>
-  rev() |>
-  map_df(function(f = "dev/data-raw-agromet/202112.rds"){
-
-    # fs::file_delete(f)
-    message(f)
-
-    d <- readRDS(f)
-
-    # glimpse(d)
-
-    if(identical(dim(d), c(0L, 0L))) return(d)
-
-    if(nrow(d) == 0) return(tibble())
-
-    # removemos unidades
-    # trimeamos
-    # parsemos
-    d <- d |>
-      mutate(across(everything(), ~ str_remove_all(.x, "°C$|kt$|°|%|Watt/m2$|hPas$|mm$"))) |>
-      mutate(across(where(is.character), str_trim)) |>
-      mutate(across(everything(), readr::parse_guess))
-
-    # glimpse(d)
-
-    dres <- d |>
-      mutate(fecha_hora = lubridate::ceiling_date(fecha_hora, "hour"), .before = 1) |>
-      group_by(station_id, fecha_hora) |>
-      summarise(
-        .groups = "drop",
-        temp_promedio_aire    = mean(temp_promedio_aire, na.rm = TRUE),
-        precipitacion_horaria = sum(precipitacion_horaria, na.rm = TRUE),
-        humed_rel_promedio    = mean(humed_rel_promedio, na.rm = TRUE),
-        presion_atmosferica   = mean(presion_atmosferica, na.rm = TRUE),
-        radiacion_solar_max   = mean(radiacion_solar_max, na.rm = TRUE),
-        veloc_max_viento      = NA, # REVISAR
-        temp_minima           = min(temp_minima, na.rm = TRUE),
-        temp_maxima           = max(temp_maxima, na.rm = TRUE),
-        direccion_del_viento  = mean(direccion_del_viento, na.rm = TRUE), # REVISAR
-        grados_dia            = NA,
-        horas_frio            = NA
-      ) |>
-      ungroup()
-
-    # glimpse(dres)
-
-    dres
-
-  })
-
-
-glimpse(dfdiario)
-
-dfdiario <- dfdiario |>
-  rename(estacion_id = station_id) |>
-  arrange(fecha_hora, estacion_id) |>
-  mutate(fuente =  "agromet", .before = 1)
-
-glimpse(dfdiario)
-
-saveRDS(dfdiario, "dev/data/agromet_diaria.rds")
 

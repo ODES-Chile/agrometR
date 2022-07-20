@@ -43,6 +43,8 @@ inst/doc
 dev/data-raw-agromet/*.rds
 dev/data-raw-dga/*.rds
 dev/data-raw-dmc/*.rds
+dev/data-daily-agromet/*.rds
+dev/data-daily-dmc/*.rds
 dev/data/*.rds
 dev/*.rds
 docs

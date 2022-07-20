@@ -1,9 +1,70 @@
 # setup -------------------------------------------------------------------
 library(tidyverse)
 
+library(pool)
+library(RPostgres)
+
+SHINY_PSQL_PWD="9a4XsQNfbmQhP3JmsWNZ"
+
+con <- RPostgres::dbConnect(
+  RPostgres::Postgres(),
+  user = "shiny",
+  # password = Sys.getenv("SHINY_PSQL_PWD"),
+  password =  SHINY_PSQL_PWD,
+  dbname = "shiny",
+  host = "137.184.9.247"
+)
+
+DBI::dbListTables(con)
+
+DBI::dbWriteTable(con, "mtcars", mtcars, temporary = F, overwrite = T)
+
+RPostgres::dbDisconnect(con)
+
+sql_con <- function() {
+  dbPool(
+    drv = Postgres(),
+    dbname = "shiny",
+    host = "137.184.9.247",
+    user = "shiny",
+    password = Sys.getenv("SHINY_PSQL_PWD")
+  )
+}
+
+
+con <- sql_con()
+
+dplyr::tbl(con, "mtcars") |>
+  dplyr::filter(cyl == 4) |>
+  dplyr::collect()
+# filter(!!sym("cyl") == !!input$filter_cyl)
+
 # data --------------------------------------------------------------------
 # source("dev/00-data-raw-agromet.R")
 # source("dev/00-data-raw-dmc.R")
+
+# agroemt
+glimpse(dfdiario)
+
+dfdiario <- dfdiario |>
+  rename(estacion_id = station_id) |>
+  arrange(fecha_hora, estacion_id) |>
+  mutate(fuente =  "agromet", .before = 1)
+
+glimpse(dfdiario)
+
+saveRDS(dfdiario, "dev/data/agromet_diaria.rds")
+
+# dmc
+glimpse(dfdiario)
+
+dfdiario <- dfdiario |>
+  arrange(fecha_hora, estacion_id) |>
+  mutate(fuente =  "dmc", .before = 1)
+
+saveRDS(dfdiario, "dev/data/dmc_diaria.rds")
+
+
 
 ddmc <- readRDS("dev/data/dmc_diaria.rds")
 dagr <- readRDS("dev/data/agromet_diaria.rds")
