@@ -1,26 +1,76 @@
 # setup -------------------------------------------------------------------
 library(tidyverse)
-
+library(lubridate)
 library(pool)
 library(RPostgres)
 
-SHINY_PSQL_PWD="9a4XsQNfbmQhP3JmsWNZ"
+TBL <- "estaciones_datos"
 
 con <- RPostgres::dbConnect(
   RPostgres::Postgres(),
   user = "shiny",
-  # password = Sys.getenv("SHINY_PSQL_PWD"),
-  password =  SHINY_PSQL_PWD,
+  password = Sys.getenv("SHINY_PSQL_PWD"),
   dbname = "shiny",
   host = "137.184.9.247"
 )
 
 DBI::dbListTables(con)
 
-DBI::dbWriteTable(con, "mtcars", mtcars, temporary = F, overwrite = T)
+# DBI::dbWriteTable(con, "mtcars", mtcars, temporary = F, overwrite = T)
+
+files <- dir("dev", full.names = TRUE) |>
+  str_subset("data-daily") |>
+  map(dir, full.names = TRUE) |>
+  unlist()
+
+years <- files |>
+  str_extract("/[0-9]{4}") |>
+  str_remove("/") |>
+  unique() |>
+  as.numeric() |>
+  sort(decreasing = TRUE)
+
+years <- years[years >= 2020]
+
+if(DBI::dbExistsTable(con, TBL)) DBI::dbRemoveTable(con, TBL)
+
+walk(years, function(year = 2021){
+
+  message(year)
+
+  files_year <- str_subset(files, str_c(year, "[0-9]{2}\\.rds"))
+
+  files_year <- set_names(files_year, files_year)
+
+  data_year <- map_df(files_year, readRDS, .id = "red") |>
+    mutate(
+      red = case_when(
+        str_detect(red, "agromet") ~ "ran",
+        str_detect(red, "dmc")     ~ "dmc",
+        TRUE ~ NA_character_
+        ),
+      fecha_hora = as_date(fecha_hora)
+    )
+
+  data_year
+
+  DBI::dbWriteTable(
+    con,
+    TBL,
+    data_year,
+    temporary = F,
+    append = DBI::dbExistsTable(con, TBL)
+    )
+
+})
 
 RPostgres::dbDisconnect(con)
 
+beepr::beep(4)
+
+
+
+# test 1 ------------------------------------------------------------------
 sql_con <- function() {
   dbPool(
     drv = Postgres(),
@@ -31,104 +81,38 @@ sql_con <- function() {
   )
 }
 
+tbl(sql_con(), TBL) |>
+  count()
 
-con <- sql_con()
-
-dplyr::tbl(con, "mtcars") |>
-  dplyr::filter(cyl == 4) |>
-  dplyr::collect()
-# filter(!!sym("cyl") == !!input$filter_cyl)
-
-# data --------------------------------------------------------------------
-# source("dev/00-data-raw-agromet.R")
-# source("dev/00-data-raw-dmc.R")
-
-# agroemt
-glimpse(dfdiario)
-
-dfdiario <- dfdiario |>
-  rename(estacion_id = station_id) |>
-  arrange(fecha_hora, estacion_id) |>
-  mutate(fuente =  "agromet", .before = 1)
-
-glimpse(dfdiario)
-
-saveRDS(dfdiario, "dev/data/agromet_diaria.rds")
-
-# dmc
-glimpse(dfdiario)
-
-dfdiario <- dfdiario |>
-  arrange(fecha_hora, estacion_id) |>
-  mutate(fuente =  "dmc", .before = 1)
-
-saveRDS(dfdiario, "dev/data/dmc_diaria.rds")
-
-
-
-ddmc <- readRDS("dev/data/dmc_diaria.rds")
-dagr <- readRDS("dev/data/agromet_diaria.rds")
-
-glimpse(ddmc)
-
-glimpse(dagr)
-
-
-dagr |>
-  group_by(estacion_id) |>
-  summarise(fecha_hora_min = min(fecha_hora)) |>
-  arrange(fecha_hora_min) |>
-  count(fecha_hora_min, sort = TRUE)
-
-# join --------------------------------------------------------------------
-data <- bind_rows(dagr, ddmc) |>
-  as_tibble()
-
-data <- rename(data, red = fuente)
-
-data
-
-saveRDS(data, "../obssa-chile/data/data_diaria.rds")
-
-data <- data |>
-  filter(lubridate::year(fecha_hora) >= 2020)
-
-saveRDS(data, "../obssa-chile/data/data_diaria_202X.rds")
-
-data <- data |>
-  filter(lubridate::year(fecha_hora) >= 2022)
-
-saveRDS(data, "../obssa-chile/data/data_diaria_2022.rds")
-
-beepr::beep(4)
-
-
-# estaciones --------------------------------------------------------------
-agrometR::estaciones_agromet |> glimpse()
-
-est_agromet <- agrometR::estaciones_agromet |>
-  select(estacion_id = ema, nombre_estacion = nombre_ema, region, latitud, longitud) |>
+tbl(sql_con(), TBL) |>
   glimpse()
 
-est_agromet
+dtest <- tbl(sql_con(), TBL) |>
+  filter(station_id == 20, red == "ran", year(fecha_hora) == 2022) |>
+  select(fecha_hora, temp_promedio_aire) |>
+  collect()
 
-agrometR::estaciones_dmc |> glimpse()
+glimpse(dtest)
 
-est_dmc <- agrometR::estaciones_dmc |>
-  select(estacion_id = codigoNacional, nombre_estacion = nombreEstacion, region = NombreRegion,
-         latitud, longitud) |>
-  glimpse()
+ggplot(dtest) +
+  geom_line(aes(fecha_hora, temp_promedio_aire))
 
-est_dmc
 
-estaciones <- bind_rows(
-  est_agromet |> mutate(red = "agromet", .before = 1),
-  est_dmc     |> mutate(red = "dmc")
-)
+VAR <- "temp_promedio_aire"
 
-sample_n(estaciones, 10)
+tbl(sql_con(), TBL) |>
+  filter(station_id == 20, red == "ran", year(fecha_hora) == 2022) |>
+  select(fecha_hora, "valor" = !!VAR) |>
+  collect() |>
+  ggplot() +
+  geom_line(aes(fecha_hora, valor))
 
-saveRDS(estaciones, "../obssa-chile/data/estaciones.rds")
+VAR <- "humed_rel_promedio"
 
-beepr::beep(4)
+tbl(sql_con(), TBL) |>
+  filter(station_id == 20, red == "ran", year(fecha_hora) == 2022) |>
+  select(fecha_hora, "valor" = VAR) |>
+  collect() |>
+  ggplot() +
+  geom_line(aes(fecha_hora, valor))
 
