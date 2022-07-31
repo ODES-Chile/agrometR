@@ -8,11 +8,10 @@ SHINY_PSQL_PWD="9a4XsQNfbmQhP3JmsWNZ"
 
 con <- RPostgres::dbConnect(
   RPostgres::Postgres(),
+  host =  Sys.getenv("HOST"),
   user = "shiny",
-  # password = Sys.getenv("SHINY_PSQL_PWD"),
-  password =  SHINY_PSQL_PWD,
-  dbname = "shiny",
-  host = "137.184.9.247"
+  password = Sys.getenv("SHINY_PSQL_PWD"),
+  dbname = "shiny"
 )
 
 DBI::dbListTables(con)
@@ -24,13 +23,12 @@ RPostgres::dbDisconnect(con)
 sql_con <- function() {
   dbPool(
     drv = Postgres(),
-    dbname = "shiny",
-    host = "137.184.9.247",
+    host =  Sys.getenv("HOST"),
     user = "shiny",
-    password = Sys.getenv("SHINY_PSQL_PWD")
+    password = Sys.getenv("SHINY_PSQL_PWD"),
+    dbname = "shiny"
   )
 }
-
 
 con <- sql_con()
 
@@ -43,7 +41,7 @@ dplyr::tbl(con, "mtcars") |>
 # source("dev/00-data-raw-agromet.R")
 # source("dev/00-data-raw-dmc.R")
 
-# agroemt
+# agromet
 glimpse(dfdiario)
 
 dfdiario <- dfdiario |>

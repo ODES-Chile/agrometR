@@ -2,7 +2,7 @@
 library(agrometR)
 library(tidyverse)
 library(lubridate)
-library(yyyymm)# remotes::install_github("jbkunst/yyyymm")
+library(yyyymm)
 
 # data mensual ------------------------------------------------------------
 pers <- ym_seq(200301, format(Sys.time(), "%Y%m"))
@@ -12,10 +12,17 @@ folder_data <- "dev/data-raw-dmc/"
 
 fs::dir_create(folder_data)
 
-# remove las 3
+# remove las 2
 try(
   dir(folder_data, full.names = TRUE) |>
-    tail(3) |>
+    tail(2) |>
+    fs::file_delete()
+)
+
+try(
+  dir(folder_data, full.names = TRUE) |>
+    tail(2) |>
+    str_replace("raw", "daily") |>
     fs::file_delete()
 )
 
@@ -239,5 +246,5 @@ p
 
 saveRDS(p, "dev/plot_hist_dmc.rds")
 
-
+beepr::beep(4)
 

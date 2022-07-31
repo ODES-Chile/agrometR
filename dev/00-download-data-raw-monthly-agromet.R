@@ -1,6 +1,6 @@
 # setup -------------------------------------------------------------------
-library(tidyverse)
 library(agrometR)
+library(tidyverse)
 library(lubridate)
 library(yyyymm)
 
@@ -12,12 +12,19 @@ folder_data <- "dev/data-raw-agromet/"
 
 fs::dir_create(folder_data)
 
-# remove las 3
+# remove las 2
 try(
   dir(folder_data, full.names = TRUE) |>
-    tail(3) |>
+    tail(2) |>
     fs::file_delete()
-  )
+)
+
+try(
+  dir(folder_data, full.names = TRUE) |>
+    tail(2) |>
+    str_replace("raw", "daily") |>
+    fs::file_delete()
+)
 
 walk(pers, function(per = 202202){
 
@@ -115,5 +122,5 @@ p
 
 saveRDS(p, "dev/plot_hist_agromet.rds")
 
-
+beepr::beep(4)
 
