@@ -4,7 +4,7 @@
 daily_aggregation_ran <- function(d){
 
   ddiario <- d |>
-    dplyr::mutate(fecha_hora = lubridate::ceiling_date(.data$fecha_hora, "day"), .before = 1) |>
+    dplyr::mutate(fecha_hora = lubridate::floor_date(.data$fecha_hora, "day"), .before = 1) |>
     dplyr::mutate(
       u_wind = .data$veloc_max_viento * sin(2 * pi * .data$direccion_del_viento  / 360),
       v_wind = .data$veloc_max_viento * cos(2 * pi * .data$direccion_del_viento  / 360)
@@ -46,7 +46,7 @@ daily_aggregation_ran <- function(d){
 daily_aggregation_dmc <- function(d){
 
   ddiario <- d |>
-    dplyr::mutate(fecha_hora = lubridate::ceiling_date(.data$momento, "day"), .before = 1) |>
+    dplyr::mutate(fecha_hora = lubridate::floor_date(.data$momento, "day"), .before = 1) |>
     dplyr::mutate(
       # REVISAR Fuerza a velocidad
       u_wind = .data$fuerzaDelVientoPromedio10Minutos * sin(2 * pi * .data$direccionDelVientoPromedio10Minutos / 360),
