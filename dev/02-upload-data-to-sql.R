@@ -165,6 +165,8 @@ tbl(sql_con(), "estaciones_datos") |>
   geom_line(aes(fecha_hora, valor))
 
 tbl(sql_con(), "estaciones_datos") |>
-  count(year(fecha_hora)) |>
-  collect()
+  count(y = year(fecha_hora)) |>
+  collect() |>
+  arrange(y)
+
 
