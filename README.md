@@ -49,7 +49,7 @@ $ direccion_del_viento  <dbl> 0, 0, 0, 0, 317, 317, 317, 317, 304, 330, 310, 271
 $ grados_dia            <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 $ horas_frio            <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 ```
-## Cómo citar?
+## Cómo citar
 
 ```md
  Kunst J, Zambrano F (2023). agrometR: For downloading meteorological data from the API of
