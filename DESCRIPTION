@@ -1,7 +1,8 @@
 Package: agrometR
-Title: What the Package Does (One Line, Title Case)
-Description: What the package does (one paragraph).
-Version: 0.0.0.9000
+Title: For download meteorological data from the API of agromet
+Description: Allows to access the meteorological data of the networks 
+    station of agromet through Chile.
+Version: 0.1.0
 Authors@R: c(
   person(
     "Joshua",
