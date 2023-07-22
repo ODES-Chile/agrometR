@@ -1,7 +1,7 @@
 Package: agrometR
 Title: For download meteorological data from the API of agromet
 Description: Allows to access the meteorological data of the networks 
-    station of agromet through Chile.
+    station of agromet around Chile.
 Version: 0.1.0
 Authors@R: c(
   person(
