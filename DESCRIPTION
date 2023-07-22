@@ -18,7 +18,7 @@ Authors@R: c(
     comment = c(ORCID = "0000-0001-6896-8534")
     )
   )
-URL: https://jkunst.com/agrometR/, https://github.com/jbkunst/agrometR
+URL: https://github.com/jbkunst/agrometR
 BugReports: https://github.com/jbkunst/agrometR/issues  
 License: MIT + file LICENSE
 Encoding: UTF-8
