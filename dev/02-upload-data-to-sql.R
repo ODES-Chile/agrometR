@@ -76,7 +76,7 @@ years <- files |>
   as.numeric() |>
   sort(decreasing = TRUE)
 
-# years <- years[years >= 2020]
+years <- years[years >= 2015]
 
 if(DBI::dbExistsTable(con, TBL_datos)) DBI::dbRemoveTable(con, TBL_datos)
 

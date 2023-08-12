@@ -42,7 +42,7 @@ daily_aggregation_ran <- function(d){
 }
 
 # d <- agrometR::get_agro_data_dmc(c(230004, 220002), "2020-11-30 01:00:00", "2020-12-15 01:00:00", verbose = TRUE)
-# glimpse(d)
+# dplyr::glimpse(d)
 daily_aggregation_dmc <- function(d){
 
   ddiario <- d |>
@@ -56,7 +56,7 @@ daily_aggregation_dmc <- function(d){
     dplyr::summarise(
       .groups = "drop",
       temp_promedio_aire    = mean(.data$temperatura, na.rm = TRUE),
-      precipitacion_horaria = sum(.data$aguaCaidaDelMinuto, na.rm = TRUE), # REVISAR!!!!!!
+      precipitacion_horaria = max(.data$aguaCaida24Horas, na.rm = TRUE), # Revisado por Joaquin!
       humed_rel_promedio    = mean(.data$humedadRelativa, na.rm = TRUE),
       presion_atmosferica   = mean(.data$presionEstacion, na.rm = TRUE), # REVISAR
       radiacion_solar_max   = mean(.data$radiacionGlobalInst, na.rm = TRUE), # REVISAR

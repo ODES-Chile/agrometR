@@ -5,7 +5,7 @@ library(lubridate)
 library(yyyymm)
 
 # data mensual ------------------------------------------------------------
-pers <- ym_seq(200301, format(Sys.time(), "%Y%m"))
+pers <- ym_seq(201501, format(Sys.time(), "%Y%m"))
 pers <- rev(pers)
 
 folder_data <- "dev/data-raw-agromet/"
@@ -13,11 +13,11 @@ folder_data <- "dev/data-raw-agromet/"
 fs::dir_create(folder_data)
 
 # remove las 2
-try(
-  dir(folder_data, full.names = TRUE) |>
-    tail(2) |>
-    fs::file_delete()
-)
+# try(
+#   dir(folder_data, full.names = TRUE) |>
+#     tail(2) |>
+#     fs::file_delete()
+# )
 
 try(
   dir(folder_data, full.names = TRUE) |>
@@ -26,7 +26,7 @@ try(
     fs::file_delete()
 )
 
-walk(pers, function(per = 202202){
+walk(sample(pers), function(per = 202202){
 
   figletr::figlet(per)
 
@@ -43,7 +43,7 @@ walk(pers, function(per = 202202){
   # date_end <- format(date_end, "%Y-%m-%d %H:%M:%S")
 
   dres <- agrometR::get_agro_data(
-    estaciones_agromet[["ema"]],
+    estaciones_agromet[["ema"]],  # |>       setdiff(c(337)),
     date_start = date_start,
     date_end = date_end,
     verbose = TRUE

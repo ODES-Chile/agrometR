@@ -5,7 +5,7 @@ library(lubridate)
 library(yyyymm)
 
 # data mensual ------------------------------------------------------------
-pers <- ym_seq(200301, format(Sys.time(), "%Y%m"))
+pers <- ym_seq(201001, format(Sys.time(), "%Y%m"))
 pers <- rev(pers)
 
 folder_data <- "dev/data-raw-dmc/"
@@ -13,11 +13,11 @@ folder_data <- "dev/data-raw-dmc/"
 fs::dir_create(folder_data)
 
 # remove las 2
-try(
-  dir(folder_data, full.names = TRUE) |>
-    tail(2) |>
-    fs::file_delete()
-)
+# try(
+#   dir(folder_data, full.names = TRUE) |>
+#     tail(2) |>
+#     fs::file_delete()
+# )
 
 try(
   dir(folder_data, full.names = TRUE) |>
@@ -26,7 +26,7 @@ try(
     fs::file_delete()
 )
 
-walk(pers, function(per = 202202){
+walk(pers, function(per = 202304){
 
   figletr::figlet(per)
 
