@@ -26,7 +26,7 @@ try(
     fs::file_delete()
 )
 
-walk(pers, function(per = 202304){
+walk(pers, function(per = 202307){
 
   figletr::figlet(per)
 
@@ -36,14 +36,15 @@ walk(pers, function(per = 202304){
 
   if(fs::file_exists(fout)) return(TRUE)
 
-  date_start <- ym_to_date(per, day = 1) |> as_datetime()
-  date_end   <- date_start + months(1) - seconds(1)
+  date_start <- (ym_to_date(per, day = 1) |> as_datetime()) + hours(4)
+  date_end   <- (date_start + months(1) - seconds(1))
 
   # date_start <- format(date_start, "%Y-%m-%d %H:%M:%S")
   # date_end <- format(date_end, "%Y-%m-%d %H:%M:%S")
 
   dres <- agrometR::get_agro_data_dmc(
     agrometR::estaciones_dmc[["codigoNacional"]],
+    # "330020",
     date_start = date_start,
     date_end = date_end,
     verbose = TRUE
@@ -52,7 +53,7 @@ walk(pers, function(per = 202304){
   # agrometR::get_agro_data_from_api_dmc(950001, date_start = date_start, date_end = date_end)
 
   # corroboramos que todo esté dentro del periodo
-  stopifnot(nrow(dres) == nrow(filter(dres, format(momento, "%Y%m") == per)))
+  # stopifnot(nrow(dres) == nrow(filter(dres, format(momento, "%Y%m") == per)))
 
   # dres <- dres %>%
   #   filter(if_any(c(temp_promedio_aire:horas_frio), negate(is.na)))

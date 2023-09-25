@@ -6,7 +6,7 @@ library(yyyymm)
 
 # data mensual ------------------------------------------------------------
 pers <- ym_seq(201501, format(Sys.time(), "%Y%m"))
-pers <- rev(pers)
+pers <- sample(pers)
 
 folder_data <- "dev/data-raw-agromet/"
 
@@ -19,14 +19,14 @@ fs::dir_create(folder_data)
 #     fs::file_delete()
 # )
 
-try(
-  dir(folder_data, full.names = TRUE) |>
-    tail(2) |>
-    str_replace("raw", "daily") |>
-    fs::file_delete()
-)
+# try(
+#   dir(folder_data, full.names = TRUE) |>
+#     tail(2) |>
+#     str_replace("raw", "daily") |>
+#     fs::file_delete()
+# )
 
-walk(sample(pers), function(per = 202202){
+walk(pers, function(per = 202202){
 
   figletr::figlet(per)
 
