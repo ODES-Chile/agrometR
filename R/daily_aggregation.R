@@ -43,10 +43,14 @@ daily_aggregation_ran <- function(d){
 
 # d <- agrometR::get_agro_data_dmc(c(230004, 220002), "2020-11-30 01:00:00", "2020-12-15 01:00:00", verbose = TRUE)
 # dplyr::glimpse(d)
+# d <- dres
 daily_aggregation_dmc <- function(d){
 
   ddiario <- d |>
-    dplyr::mutate(fecha_hora = lubridate::floor_date(.data$momento, "day"), .before = 1) |>
+    dplyr::mutate(
+      fecha_hora = lubridate::floor_date(lubridate::with_tz(.data$momento, tzone = "America/Santiago"), "day"),
+      .before = 1
+      ) |>
     dplyr::mutate(
       # REVISAR Fuerza a velocidad
       u_wind = .data$fuerzaDelVientoPromedio10Minutos * sin(2 * pi * .data$direccionDelVientoPromedio10Minutos / 360),
@@ -81,6 +85,31 @@ daily_aggregation_dmc <- function(d){
     dplyr::select(-.data$u_wind, - .data$v_wind)
 
   # glimpse(ddiario)
+  # parte precicipacion
+  dprec <- d |>
+    dplyr::mutate(
+      fecha_hora = lubridate::floor_date(lubridate::with_tz(.data$momento, tzone = "America/Santiago"), "day"),
+      .before = 1
+      ) |>
+    select(.data$station_id, .data$momento, .data$aguaCaida24Horas, .data$fecha_hora) |>
+    arrange(.data$station_id, .data$momento) |>
+    group_by(.data$station_id) |>
+    mutate(
+      aguaCaida24Horas_lead = lead(aguaCaida24Horas),
+      prec_hora = aguaCaida24Horas_lead - aguaCaida24Horas,
+      prec_hora = ifelse(hour(momento) == 12 & minute(momento) == 0, aguaCaida24Horas_lead, prec_hora),
+      momento2 = lubridate::with_tz(momento, tzone = "America/Santiago"),
+      fecha_hora = lubridate::floor_date(.data$momento2, "day"), .before = 1
+    ) |>
+    group_by(fecha_hora) |>
+    summarise(precipitacion_horaria2 = sum(prec_hora, na.rm = TRUE))
+
+  dprec
+
+  ddiario <- ddiario |>
+    left_join(dprec, by = join_by(fecha_hora)) |>
+    mutate(precipitacion_horaria = precipitacion_horaria2) |>
+    select(-precipitacion_horaria2)
 
   ddiario
 
