@@ -101,13 +101,13 @@ daily_aggregation_dmc <- function(d){
       momento2 = lubridate::with_tz(momento, tzone = "America/Santiago"),
       fecha_hora = lubridate::floor_date(.data$momento2, "day"), .before = 1
     ) |>
-    group_by(fecha_hora) |>
+    group_by(.data$station_id, fecha_hora) |>
     summarise(precipitacion_horaria2 = sum(prec_hora, na.rm = TRUE))
 
   dprec
 
   ddiario <- ddiario |>
-    left_join(dprec, by = join_by(fecha_hora)) |>
+    left_join(dprec, by = join_by(station_id, fecha_hora)) |>
     mutate(precipitacion_horaria = precipitacion_horaria2) |>
     select(-precipitacion_horaria2)
 

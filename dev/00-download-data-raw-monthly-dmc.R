@@ -18,15 +18,15 @@ fs::dir_create(folder_data)
 #     tail(2) |>
 #     fs::file_delete()
 # )
+#
+# try(
+#   dir(folder_data, full.names = TRUE) |>
+#     tail(2) |>
+#     str_replace("raw", "daily") |>
+#     fs::file_delete()
+# )
 
-try(
-  dir(folder_data, full.names = TRUE) |>
-    tail(2) |>
-    str_replace("raw", "daily") |>
-    fs::file_delete()
-)
-
-walk(pers, function(per = 202307){
+walk(pers, function(per = 202308){
 
   figletr::figlet(per)
 
@@ -49,6 +49,13 @@ walk(pers, function(per = 202307){
     date_end = date_end,
     verbose = TRUE
   )
+
+  # dres |>
+  #   # filter(station_id ==  "330020") |>
+  #   agrometR:::daily_aggregation_dmc() |>
+  #   filter(as.Date(fecha_hora) == ymd(20230823)) |>
+  #   # filter(station_id ==  "330020") |>
+  #   glimpse()
 
   # agrometR::get_agro_data_from_api_dmc(950001, date_start = date_start, date_end = date_end)
 
